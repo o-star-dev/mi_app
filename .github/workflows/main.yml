@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Set up Python
@@ -21,18 +21,11 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt update
-        sudo apt install -y \
-          build-essential \
-          zip \
-          unzip \
-          openjdk-17-jdk \
-          zlib1g-dev \
-          libffi-dev \
-          libssl-dev
+        sudo apt install -y build-essential zip unzip openjdk-17-jdk zlib1g-dev libffi-dev libssl-dev wget
 
-    - name: Install Android SDK
+    - name: Install Android SDK & Build-tools
       run: |
-        mkdir -p $HOME/android-sdk
+        mkdir -p $HOME/android-sdk/cmdline-tools
         cd $HOME/android-sdk
         wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
         unzip commandlinetools-linux-*.zip
