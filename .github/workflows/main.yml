@@ -23,20 +23,6 @@ jobs:
         sudo apt update
         sudo apt install -y build-essential zip unzip openjdk-17-jdk zlib1g-dev libffi-dev libssl-dev wget
 
-    - name: Install Android SDK & Build-tools
-      run: |
-        mkdir -p $HOME/android-sdk/cmdline-tools
-        cd $HOME/android-sdk
-        wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-        unzip commandlinetools-linux-*.zip
-        mkdir -p cmdline-tools/latest
-        mv cmdline-tools/* cmdline-tools/latest/ || true
-        yes | cmdline-tools/latest/bin/sdkmanager --licenses
-        cmdline-tools/latest/bin/sdkmanager \
-          "platform-tools" \
-          "platforms;android-33" \
-          "build-tools;33.0.2"
-
     - name: Install Buildozer
       run: |
         pip install --upgrade pip
@@ -44,7 +30,8 @@ jobs:
 
     - name: Build APK
       run: |
-        buildozer android debug --sdk-dir $HOME/android-sdk
+        rm -rf .buildozer/android/platform/android-sdk
+        buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
