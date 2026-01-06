@@ -1,5 +1,6 @@
 [app]
 
+version = 0.1
 title = Mi App
 package.name = miapp
 package.domain = org.luckseid
