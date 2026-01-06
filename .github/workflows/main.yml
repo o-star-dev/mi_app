@@ -10,53 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Obtener código del repositorio
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Configurar Python
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.10"
 
-    - name: Instalar dependencias del sistema
+    - name: Install system dependencies
       run: |
         sudo apt update
         sudo apt install -y build-essential zip unzip openjdk-17-jdk zlib1g-dev libffi-dev libssl-dev wget
 
-    - name: Instalar Buildozer
+    - name: Install Buildozer
       run: |
         pip install --upgrade pip
         pip install buildozer cython
 
-    - name: Configurar e instalar componentes de Android
+    - name: Build APK
       run: |
-        # Establecer variables de entorno para SDK/NDK de Android
-        export ANDROIDSDK="/home/runner/.buildozer/android/platform/android-sdk"
-        export ANDROIDNDK="/home/runner/.buildozer/android/platform/android-ndk-r25b"
-        export ANDROIDAPI="33"
-        export ANDROIDBUILDTOOLS="33.0.2"
-
-        # Crear carpetas necesarias
-        mkdir -p $ANDROIDSDK/cmdline-tools/latest
-        mkdir -p $ANDROIDSDK/build-tools
-        mkdir -p $ANDROIDNDK
-
-        # Descargar y extraer herramientas de línea de comandos del SDK
-        wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O sdk-tools.zip
-        unzip sdk-tools.zip -d $ANDROIDSDK/cmdline-tools
-        mv $ANDROIDSDK/cmdline-tools/cmdline-tools/* $ANDROIDSDK/cmdline-tools/latest/
-
-        # Aceptar licencias y instalar componentes
-        yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager --licenses
-        $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager "build-tools;$ANDROIDBUILDTOOLS" "platforms;android-$ANDROIDAPI" "ndk;25.2.9519653"
-
-    - name: Compilar APK
-      run: |
+        # Elimina cualquier SDK viejo de Buildozer
+        rm -rf .buildozer/android
+        # Compila el APK, Buildozer instalará SDK y NDK automáticamente
         buildozer android debug
 
-    - name: Subir APK como artefacto
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: apk
         path: bin/*.apk
-        
